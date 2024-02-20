@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Parser</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script type="text/javascript" charset="utf8"
+        src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Expense Parser</h2>
+
+    <textarea id="inputText" rows="10" cols="50" placeholder="Paste your expenses here..."></textarea>
+    <br>
+    <button onclick="parseAndDisplay()">Parse Expenses</button>
+    <br>
+    <textarea id="outputText" rows="10" cols="50" readonly></textarea>
+
+    <div id="expensesTable"></div>
+
+    <script>
+        const formatDate = (date) => {
+            // Extracting year, month, and day as individual components
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1; // getMonth() returns 0-11
+            const day = date.getDate();
+
+            // Padding single digit month and day values with leading zero
+            const monthFormatted = month.toString().padStart(2, '0');
+            const dayFormatted = day.toString().padStart(2, '0');
+
+            // Concatenating components in 'YYYYMMDD' format
+            const formattedDate = `${year}${monthFormatted}${dayFormatted}`;
+
+            return formattedDate;
+        };
+
+        const parseTextToTable = (input) => {
+            const lines = input.split('\n').filter(line => line.trim() !== '');
+            const table = [];
+            let currentDate;
+
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].match(/^\w+day,/)) {
+                    currentDate = new Date(lines[i]);
+                    continue;
+                }
+
+                if (!lines[i + 1].match(/^\d/)) {
+                    const category = lines[i];
+                    const expenseName = lines[++i];
+                    const amounts = lines[++i].match(/(\d+\.\d+) CAD(\d+\.\d+)? (USD|CAD)?/);
+                    const amountInCAD = amounts[1];
+                    const amountInOriginalCurrency = amounts[3] ? `${amounts[2]} ${amounts[3]}` : '';
+                    const dateFormatted = formatDate(currentDate);
+                    const filename = `${dateFormatted}_${expenseName.replace(/[^a-zA-Z0-9.\-_]/g, '')}_${amountInCAD}.pdf`;
+
+                    table.push([
+                        currentDate.toLocaleDateString('en-CA'),
+                        category,
+                        expenseName,
+                        amountInCAD,
+                        amountInOriginalCurrency,
+                        filename
+                    ]);
+                }
+            }
+
+            return table;
+        };
+
+        const parseAndDisplay = () => {
+            const inputText = document.getElementById('inputText').value;
+            const outputText = document.getElementById('outputText');
+            const tableData = parseTextToTable(inputText);
+
+            outputText.value = tableData.map(row => row.join('\t')).join('\n');
+
+            $(document).ready(function () {
+                $('#expensesTable').html('<table id="dataTable" class="display" width="100%"></table>');
+                $('#dataTable').DataTable({
+                    data: tableData,
+                    columns: [
+                        { title: "Expense Date" },
+                        { title: "Category" },
+                        { title: "Expense Name" },
+                        { title: "Amount in CAD" },
+                        { title: "Amount in Original Currency" },
+                        { title: "Filename" }
+                    ],
+                    paging: false,
+                });
+            });
+        };
+    </script>
+
+</body>
+
+</html>
