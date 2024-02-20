@@ -54,7 +54,7 @@
 
         const parseTextToTable = (input) => {
             let initials = document.getElementById('initials').value.toUpperCase();
-            initials = initials.length == 0 ? '' : initials + '_';
+            initials = initials.length == 0 ? '' : initials + ' ';
 
 
             const lines = input.split('\n').filter(line => line.trim() !== '');
@@ -74,7 +74,7 @@
                     const amountInCAD = amounts[1].replace(/,/g, '');
                     const amountInOriginalCurrency = (amounts[3] ? `${amounts[2]} ${amounts[3]}` : '').replace(/,/g, '');
                     const dateFormatted = formatDate(currentDate);
-                    const filename = `${initials}${dateFormatted}_${expenseName.replace(/[^a-zA-Z0-9.\-_]/g, '')}_${amountInCAD}.pdf`;
+                    const filename = `${initials}${dateFormatted} ${expenseName.replace(/[^a-zA-Z0-9.\-_]/g, '')} (${amountInCAD}).pdf`;
 
                     table.push([
                         currentDate.toLocaleDateString('en-CA'),
