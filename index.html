@@ -115,6 +115,7 @@
             window.dt.columns.adjust().draw();
 
             window.localStorage.setItem('inputText', inputText);
+            window.localStorage.setItem('name', document.getElementById('initials').value);
         };
 
         window.dt = $('#dataTable').DataTable({
@@ -164,6 +165,7 @@
         const inputText = window.localStorage.getItem('inputText');
         if (inputText) {
             document.getElementById('inputText').value = inputText;
+            document.getElementById('initials').value = window.localStorage.getItem('name');
             parseAndDisplay();
 
             // restore checkbox state
