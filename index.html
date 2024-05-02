@@ -70,7 +70,7 @@
                 if (!lines[i + 1].match(/^\d/)) {
                     const category = lines[i];
                     const expenseName = lines[++i];
-                    const amounts = lines[++i].match(/([\d,]+\.\d+) CAD([\d,]+\.\d+)? ([A-Z]{3})?/);
+                    const amounts = lines[++i].match(/([\-\d,]+\.\d+) CAD([\-\d,]+\.\d+)? ([A-Z]{3})?/);
                     const amountInCAD = amounts[1].replace(/,/g, '');
                     const amountInOriginalCurrency = (amounts[3] ? `${amounts[2]} ${amounts[3]}` : '').replace(/,/g, '');
                     const dateFormatted = formatDate(currentDate);
